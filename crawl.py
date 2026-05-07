@@ -1,4 +1,4 @@
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 
 
@@ -55,3 +55,30 @@ def get_first_paragraph_from_html(html: str) -> str:
 
     paragraph = soup.find("p")
     return paragraph.get_text(strip=True) if paragraph else ""
+
+
+def extract_page_data(html: str, page_url: str) -> dict:
+    """Extract structured page metadata from HTML."""
+    soup = BeautifulSoup(html, "html.parser")
+    heading = get_heading_from_html(html)
+    first_paragraph = get_first_paragraph_from_html(html)
+
+    outgoing_links = []
+    for link_tag in soup.find_all("a", href=True):
+        href = link_tag["href"].strip()
+        if href:
+            outgoing_links.append(urljoin(page_url, href))
+
+    image_urls = []
+    for img_tag in soup.find_all("img", src=True):
+        src = img_tag["src"].strip()
+        if src:
+            image_urls.append(urljoin(page_url, src))
+
+    return {
+        "url": page_url,
+        "heading": heading,
+        "first_paragraph": first_paragraph,
+        "outgoing_links": outgoing_links,
+        "image_urls": image_urls,
+    }
