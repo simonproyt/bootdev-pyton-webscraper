@@ -1,5 +1,7 @@
 import sys
 
+from crawl import get_html
+
 
 def main() -> int:
     args = sys.argv
@@ -12,6 +14,8 @@ def main() -> int:
 
     base_url = args[1]
     print(f"starting crawl of: {base_url}")
+    html = get_html(base_url)
+    print(html)
     return 0
 
 

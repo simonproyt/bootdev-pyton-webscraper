@@ -1,3 +1,4 @@
+import requests
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 
@@ -82,3 +83,16 @@ def extract_page_data(html: str, page_url: str) -> dict:
         "outgoing_links": outgoing_links,
         "image_urls": image_urls,
     }
+
+
+def get_html(url: str) -> str:
+    """Fetch HTML from a URL using a custom User-Agent."""
+    headers = {"User-Agent": "BootCrawler/1.0"}
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+
+    content_type = response.headers.get("Content-Type", "")
+    if not content_type.lower().startswith("text/html"):
+        raise ValueError(f"Unsupported content type: {content_type}")
+
+    return response.text
